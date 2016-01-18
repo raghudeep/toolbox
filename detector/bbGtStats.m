@@ -8,7 +8,7 @@ if ~exist(prms.annotationDir,'dir') mkdir(prms.annotationDir); end
 if ~exist(prms.statsDir,'dir') mkdir(prms.statsDir); end
 
 clsParams = {}; clsStats = {};
-for i=1:length(prms.clsLabels)
+for i=1:prms.cls.numClasses
     clsParams{i} = [];
 end
 
@@ -19,16 +19,18 @@ for i=1:length(prms.dataList)
     %Load segmentation labels for the image
     labels = load([prms.gtLabelDir '/' img_name '.txt']);    
     numObjects = 0; objTypes = []; objParams = [];
-    for j=1:length(prms.clsLabels)
-        bwImage = labels == j;
-        params = GetParams(bwImage);
-        for t=1:size(params,1)
-           objParams = [objParams; params(t,:)];
-           numObjects = numObjects + 1;
-           objTypes{numObjects} = prms.clsLabels(j);
-           clsParams{j} = [clsParams{j}; params(t,1:4)];
-					 % maybe add 'other' class
-        end
+    for j=1:prms.numClasses 
+			  if ismember(j-1,prms.clsLabels)
+            bwImage = labels == j-1; 
+            params = GetParams(bwImage);
+            for t=1:size(params,1)
+               objParams = [objParams; params(t,:)];
+               numObjects = numObjects + 1;
+               objTypes{numObjects} = j-1; 
+               clsParams{j} = [clsParams{j}; params(t,1:4)];
+    					 % maybe add 'other' class
+            end
+				end
     end
     objs = bbGt('create',[numObjects]);
     for k=1:numObjects
@@ -43,15 +45,17 @@ for i=1:length(prms.dataList)
     objs = bbGt('bbSave', objs, fName);
 end
 
-for j=1:length(prms.clsLabels)
+for j=1:prms.numClasses 
     stats = {}; params = clsParams{j};
-    stats.xRange = [max(0,min(params(:,1))-100) max(params(:,1))+100];
-    stats.yRange = [max(0,min(params(:,2))-100) max(params(:,2))+100];
-    stats.hRange = [max(0,min(params(:,4))-20) max(params(:,4))+20];
-    stats.wRange = [max(0,min(params(:,3))-10) max(params(:,3))+10];
-    stats.modelDs = [mean(params(:,4))-10 mean(params(:,3))-10];
-    stats.modelDsPad = [stats.hRange(2)-10 stats.wRange(2)];
-		clsStats{j} = stats;
+		if size(params,1)>0
+        stats.xRange = [max(0,min(params(:,1))-100) max(params(:,1))+100];
+        stats.yRange = [max(0,min(params(:,2))-100) max(params(:,2))+100];
+        stats.hRange = [max(0,min(params(:,4))-20) max(params(:,4))+20];
+        stats.wRange = [max(0,min(params(:,3))-10) max(params(:,3))+10];
+        stats.modelDs = [mean(params(:,4))-10 mean(params(:,3))-10];
+        stats.modelDsPad = [stats.hRange(2)-10 stats.wRange(2)];
+        clsStats{j} = stats;
+		end
 end
 save([prms.statsDir '/stats.mat'],'clsStats');
 
