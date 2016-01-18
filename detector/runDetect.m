@@ -10,17 +10,16 @@ opts.pNms.overlap = 0.99999;
 opts.nWeak=[32 128 512 2048];
 opts.pJitter=struct('flip',1);
 opts.pBoost.pTree.fracFtrs=1/16;
-opts.posGtDir= prms.annotationDir;
+opts.posGtDir=prms.annotationDir;
+opts.posImgDir=prms.imgDir;
 stats = load([prms.statsDir '/stats.mat']);
-tempImgDir = tempname; mkdir(tempImgDir);
-for i=1:length(prms.trainDataFiles)
-    copyfile([prms.imgDir '/' prms.trainDataFiles{i} '.png'], tempImgDir);
-end
-opts.posImgDir=tempImgDir;
+
+if ~exist(prms.modelDir,'dir') mkdir(prms.modelDir); end
+if ~exist(prms.modelDir,'dir') mkdir(prms.outputDir); end
 
 for j=1:numClasses 
 	  if ismember(j-1,prms.clsLabels)
-        opts.name=[prms.modelDir '/' num2str(prms.clsLabels(j))];
+        opts.name=[prms.modelDir '/' num2str(j-1)];
         opts.modelDs=stats.clsStats{j}.modelDs; opts.modelDsPad=stats.clsStats{j}.modelDsPad;
         pLoad={'lbls',{'door'},'ilbls',{'doors'}}; %% check
         opts.pLoad = [pLoad 'yRng',stats.clsStats(j).yRange, 'xRng',stats.clsStats(j).xRange,...

@@ -4,6 +4,7 @@ function varargout = bbGtStats( varargin )
 prms = getPrmDflt(varargin,{'dataList','','gtLabelDir','','annotationDir','',...
        'statsDir','','clsLabels',[],'numClasses',1},1);
 
+if ~exist(prms.modelDir,'dir') mkdir(prms.modelDir); end
 if ~exist(prms.annotationDir,'dir') mkdir(prms.annotationDir); end
 if ~exist(prms.statsDir,'dir') mkdir(prms.statsDir); end
 
@@ -13,11 +14,9 @@ for i=1:prms.cls.numClasses
 end
 
 for i=1:length(prms.dataList)    
-    %[a,img_name,c] = fileparts(dataList{i});
-		img_name = prms.dataList{i};
-		fprintf(1,'%d. %s\n',i,img_name);
+		fprintf(1,'%d. %s\n',i,prms.dataList{i});
     %Load segmentation labels for the image
-    labels = load([prms.gtLabelDir '/' img_name '.txt']);    
+    labels = load([prms.gtLabelDir '/' prms.dataList{i} '.txt']);    
     numObjects = 0; objTypes = []; objParams = [];
     for j=1:prms.numClasses 
 			  if ismember(j-1,prms.clsLabels)
@@ -41,7 +40,7 @@ for i=1:length(prms.dataList)
         %objs(k).ign = objParams(k,10);
         %objs(k).ang = objParams(k,11);
     end
-    fName = [prms.annotationDir '/' img_name '.txt'];
+    fName = [prms.annotationDir '/' prms.dataList{i} '.txt'];
     objs = bbGt('bbSave', objs, fName);
 end
 
