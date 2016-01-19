@@ -30,7 +30,9 @@ for j=1:prms.numClasses
         detector = acfModify(detector,'cascThr',-1,'cascCal',prms.clsCascCal(j),'stride',1);
 				leftRange=stats.clsStats{j}.xRange; topRange=stats.clsStats{j}.yRange;
 				widthRange=stats.clsStats{j}.wRange; heightRange=stats.clsStats{j}.hRange;
+			  fprintf(1,'Testing class %d on...\n',j-1);
         for t=1:length(prms.testDataFiles)
+					  fprintf(1,'%d. %s\n',t,prms.testDataFiles{t});
             I = imread([prms.imgDir prms.testDataFiles{t} '.png']);
             bbs = acfDetect(I,detector); bbs_final = [];
             for s=1:size(bbs,1)
@@ -49,7 +51,7 @@ for j=1:prms.numClasses
                 if bbs_final(k,5) > 0
                     featureImage = featureImage + GetDetectionMask(imgSize,bbs_final(k,:),bbs_final(k,5));
                 end
-            end
+            end 
             featureImage = featureImage'; features = featureImage(:);
             %dlmwrite(strcat(outputDir,'/',img_name,'.doorfeatures.txt'),doorFeatures,'delimiter',' ');
             fid=fopen([prms.outputDir '/' prms.testDataFiles{t} '.' num2str(j-1) '.bin'],'wb');
