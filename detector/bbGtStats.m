@@ -45,7 +45,7 @@ for j=1:prms.numClasses
         clsStats{j} = stats;
 		end
 end
-%save([prms.statsDir '/stats.mat'],'clsStats'); 
+save([prms.statsDir '/stats.mat'],'clsStats'); 
 stats.clsStats=clsStats; varargout{1}=stats;
 
 end
