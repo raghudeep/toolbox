@@ -25,7 +25,7 @@ for j=1:prms.numClasses
         opts.modelDs=stats.clsStats{j}.modelDs; opts.modelDsPad=stats.clsStats{j}.modelDsPad;
         pLoad={'lbls',{num2str(j-1)},'ilbls',{[num2str(j-1) 's']}}; % check
         opts.pLoad = [pLoad 'yRng',stats.clsStats{j}.yRange, 'xRng',stats.clsStats{j}.xRange,...
-				              'hRng',stats.clsStats{j}.hRange, 'wRng',stats.clsStats{j}.wRange ];opts
+				              'hRng',stats.clsStats{j}.hRange, 'wRng',stats.clsStats{j}.wRange ];
         detector = acfTrain(opts);
         detector = acfModify(detector,'cascThr',-1,'cascCal',prms.clsCascCal(j),'stride',1);
 				leftRange=stats.clsStats{j}.xRange; topRange=stats.clsStats{j}.yRange;
