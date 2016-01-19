@@ -52,6 +52,7 @@ for j=1:prms.numClasses
                     featureImage = featureImage + GetDetectionMask(imgSize,bbs_final(k,:),bbs_final(k,5));
                 end
             end 
+            imwrite(mat2gray(featureImage),[prms.outputDir '/' prms.testDataFiles{t} '.' num2str(j-1) '.png'],'png');
             featureImage = featureImage'; features = featureImage(:);
             %dlmwrite(strcat(outputDir,'/',img_name,'.doorfeatures.txt'),doorFeatures,'delimiter',' ');
             fid=fopen([prms.outputDir '/' prms.testDataFiles{t} '.' num2str(j-1) '.bin'],'wb');
